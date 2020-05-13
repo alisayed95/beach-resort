@@ -7,10 +7,13 @@ import SingleRoom from './Pages/SingleRoom'
 import Error from './Pages/Error'
 import RoomContextProvider from './Context';
 import Footer from './Components/Footer';
+import ScrollToTop from './ScrollToTop';
+
 const App = () => {
   return ( 
     <RoomContextProvider>
     <Router>
+      <ScrollToTop />
       <Navbar />
       <Switch>
         <Route exact path='/' component={Home} />
