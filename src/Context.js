@@ -63,7 +63,7 @@ const RoomContextProvider = (props) => {
     useEffect(()=>{
         getData();
     },[])
-
+    
     
     const getRoom = (slug) => {
         let tempRoom = [...state.rooms];
@@ -72,7 +72,7 @@ const RoomContextProvider = (props) => {
     }
     const handleChange = (event) =>{
         const {name,value,type} = event.target;
-        type === 'checkbox' ? setState({[name] : !state[name]}): setState({[name] : value});            
+        type === 'checkbox' ? setState({...state,[name] : !state[name]}): setState({...state,[name] : value});            
     }
     const filterRooms = () =>{
         let {type,capacity,price,size,breakfast,pets} = state
