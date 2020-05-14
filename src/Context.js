@@ -105,7 +105,9 @@ const RoomContextProvider = (props) => {
          sortedRooms : tempRooms
      })
      }
-    
+    useEffect(()=>{
+        filterRooms()
+    },[state.price,state.type,state.capacity,state.breakfast,state.pets,state.size])
 
     return ( 
         <RoomContext.Provider value={{...state,getRoom,handleChange}}>
