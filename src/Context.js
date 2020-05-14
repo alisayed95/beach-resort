@@ -1,4 +1,4 @@
-import React, { createContext, Component, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import Client from './Contentful'
 
 
@@ -34,6 +34,7 @@ const RoomContextProvider = (props) => {
         const maxPrice = Math.max(...rooms.map(item => item.price));
         const maxSize = Math.max(...rooms.map(item => item.size))
         setState({
+            ...state,
             rooms,
             featuredRooms,
             sortedRooms : rooms,
@@ -60,7 +61,7 @@ const RoomContextProvider = (props) => {
     }
    
     useEffect(()=>{
-        getData()
+        getData();
     },[])
 
     
@@ -71,41 +72,40 @@ const RoomContextProvider = (props) => {
     }
     const handleChange = (event) =>{
         const {name,value,type} = event.target;
-        type === 'checkbox' ? setState({[name] : !state[name]},filterRooms): setState({[name] : value},filterRooms);            
+        type === 'checkbox' ? setState({[name] : !state[name]}): setState({[name] : value});            
     }
-    
     const filterRooms = () =>{
-       let {type,capacity,price,size,breakfast,pets} = state
-        capacity = parseInt(capacity)
-        price = parseInt(price)
-        
-       let tempRooms = [...state.rooms];
-       //filter by room type
-       if(type !== 'all'){
-           tempRooms = tempRooms.filter((item) => item.type === type)
-       }
-       //filter by room capacity
-       if(capacity !== 1){
-           tempRooms = tempRooms.filter((item) => item.capacity >= capacity);
-       }
-       //filter by room price
-       tempRooms = tempRooms.filter((item)=> item.price <= price)
-       //filter by room size
-       tempRooms = tempRooms.filter((item) => item.size <= size)
-       //filter by breakfast
-       if(breakfast){
-           tempRooms = tempRooms.filter((item) => item.breakfast === true)
-       }
-       //filter by pets
-       if(pets){
-        tempRooms = tempRooms.filter((item) => item.pets === true)
-    }
-    setState({
-        ...state,
-        sortedRooms : tempRooms
-    })
-       
-    }
+        let {type,capacity,price,size,breakfast,pets} = state
+         capacity = parseInt(capacity)
+         price = parseInt(price)
+         
+        let tempRooms = [...state.rooms];
+        //filter by room type
+        if(type !== 'all'){
+            tempRooms = tempRooms.filter((item) => item.type === type)
+        }
+        //filter by room capacity
+        if(capacity !== 1){
+            tempRooms = tempRooms.filter((item) => item.capacity >= capacity);
+        }
+        //filter by room price
+        tempRooms = tempRooms.filter((item)=> item.price <= price)
+        //filter by room size
+        tempRooms = tempRooms.filter((item) => item.size <= size)
+        //filter by breakfast
+        if(breakfast){
+            tempRooms = tempRooms.filter((item) => item.breakfast === true)
+        }
+        //filter by pets
+        if(pets){
+         tempRooms = tempRooms.filter((item) => item.pets === true)
+     }
+     setState({
+         ...state,
+         sortedRooms : tempRooms
+     })
+     }
+    
 
     return ( 
         <RoomContext.Provider value={{...state,getRoom,handleChange}}>
