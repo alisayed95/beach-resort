@@ -1,12 +1,11 @@
-import React, { createContext, Component } from 'react';
+import React, { createContext, Component, useState, useEffect } from 'react';
 import Client from './Contentful'
 
 
 export const RoomContext = createContext();
 
-class RoomContextProvider extends Component {
-
-    state= {
+const RoomContextProvider = (props) => {
+    const [state,setState] = useState({
         rooms : [],
         sortedRooms : [],
         featuredRooms : [],
@@ -21,20 +20,20 @@ class RoomContextProvider extends Component {
         maxSize : 0,
         breakfast : false,
         pets : false
-    }
+    })
 
-    getData = async () => {
+    const getData = async () => {
         try{
             let response = await Client.getEntries({
                 content_type : 'beachResortRoom',
                 order : 'sys.createdAt'
             });
 
-        const rooms  = this.formatData(response.items)
+        const rooms  = formatData(response.items)
         const featuredRooms = rooms.filter(room => room.featured === true);
         const maxPrice = Math.max(...rooms.map(item => item.price));
         const maxSize = Math.max(...rooms.map(item => item.size))
-        this.setState({
+        setState({
             rooms,
             featuredRooms,
             sortedRooms : rooms,
@@ -50,11 +49,7 @@ class RoomContextProvider extends Component {
         }
     }
 
-    componentDidMount() {
-        this.getData()
-    }
-
-    formatData = (items) => {
+    const formatData = (items) => {
         const tempItems = items.map(item =>{
             let id = item.sys.id;
             let images = item.fields.images.map(img=>img.fields.file.url);
@@ -63,22 +58,28 @@ class RoomContextProvider extends Component {
         })
         return tempItems;
     }
-    getRoom = (slug) => {
-        let tempRoom = [...this.state.rooms];
+   
+    useEffect(()=>{
+        getData()
+    },[])
+
+    
+    const getRoom = (slug) => {
+        let tempRoom = [...state.rooms];
         tempRoom = tempRoom.find(room => room.slug === slug)
         return tempRoom;
     }
-    handleChange = (event) =>{
+    const handleChange = (event) =>{
         const {name,value,type} = event.target;
-        type === 'checkbox' ? this.setState({[name] : !this.state[name]},this.filterRooms): this.setState({[name] : value},this.filterRooms);            
+        type === 'checkbox' ? setState({[name] : !state[name]},filterRooms): setState({[name] : value},filterRooms);            
     }
     
-    filterRooms = () =>{
-       let {type,capacity,price,size,breakfast,pets} = this.state
+    const filterRooms = () =>{
+       let {type,capacity,price,size,breakfast,pets} = state
         capacity = parseInt(capacity)
         price = parseInt(price)
         
-       let tempRooms = [...this.state.rooms];
+       let tempRooms = [...state.rooms];
        //filter by room type
        if(type !== 'all'){
            tempRooms = tempRooms.filter((item) => item.type === type)
@@ -99,21 +100,18 @@ class RoomContextProvider extends Component {
        if(pets){
         tempRooms = tempRooms.filter((item) => item.pets === true)
     }
-       //change sorted room state
-       this.setState({
-           sortedRooms : tempRooms
-       })
-       // convert to hooks
+    setState({
+        ...state,
+        sortedRooms : tempRooms
+    })
+       
     }
-    
 
-    render(){
-        return ( 
-            <RoomContext.Provider value={{...this.state,getRoom:this.getRoom,handleChange:this.handleChange}}>
-                {this.props.children}
-            </RoomContext.Provider>
-         );
-    }
+    return ( 
+        <RoomContext.Provider value={{...state,getRoom,handleChange}}>
+            {props.children}
+        </RoomContext.Provider>
+     );
 }
  
 export default RoomContextProvider;
